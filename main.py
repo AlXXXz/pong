@@ -22,6 +22,15 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
+fnt = pygame.font.Font(None, 52)
+text = fnt.render(str(0), True, WHITE)
+
+text2 = fnt.render(str(0), True, WHITE)
+
+place = text.get_rect(center=(WIDTH / 4, HEIGHT / 10))
+place2 = text2.get_rect(center=(WIDTH - (WIDTH / 4), HEIGHT / 10) )
+screen.blit(text, place)
+screen.blit(text2, place2)
 
 PlayerScore = 0
 Player2Score = 0
@@ -45,7 +54,7 @@ class Player(pygame.sprite.Sprite):
             self.speedy = 2
         if self.rect.y > 0 or self.rect.y < (HEIGHT - 60):
             self.rect.y += self.speedy
-        
+
 
 class Player2(pygame.sprite.Sprite):
     def __init__(self):
@@ -83,7 +92,7 @@ class Ball(pygame.sprite.Sprite):
         # self.speedy = 5
         self.rect.x += self.speedx * self.xFac
         self.rect.y += self.speedy * self.yFac
-        # if self.rect.x >= WIDTH or self.rect.x <= 0:
+        # if self.rect.x >= WIDTH or self.rect.y <= 0:
         #     self.xFac *= -1
         if self.rect.y >= HEIGHT or self.rect.y <= 0:
             self.yFac *= -1
@@ -101,10 +110,14 @@ all_sprites.add(ball)
 #     ball.rect.center = (WIDTH / 2, HEIGHT / 2)
 
 def resetBallPlayer():
+    player.rect.center = (WIDTH / 6, HEIGHT / 2)
+    player2.rect.center = (WIDTH - (WIDTH / 6), HEIGHT / 2)
     ball.rect.center = (player.rect.x + 30, player.rect.y + (PlayerHeight / 2)) #((WIDTH / 6) + 20, HEIGHT / 2)
     player.score += 1
 
 def resetBallPlayer2():
+    player.rect.center = (WIDTH / 6, HEIGHT / 2)
+    player2.rect.center = (WIDTH - (WIDTH / 6), HEIGHT / 2)
     ball.rect.center = (player2.rect.x - 30, player2.rect.y + (PlayerHeight / 2))
     player2.score += 1
 # Цикл игры
@@ -126,10 +139,11 @@ while running:
     # Обновление
     all_sprites.update()
     
+    pygame.display.update()
 
-    if ball.rect.x == player.rect.x + PlayerWidth and (ball.rect.y >= player.rect.y - 50 and ball.rect.y <= player.rect.y + 50):
+    if ball.rect.x == player.rect.x + PlayerWidth and (ball.rect.y >= player.rect.y - PlayerHeight and ball.rect.y <= player.rect.y + PlayerHeight):
         ball.xFac *= -1
-    if ball.rect.x >= player2.rect.x - PlayerWidth and (ball.rect.y >= player2.rect.y - 50 and ball.rect.y <= player2.rect.y + 50):
+    if ball.rect.x >= player2.rect.x - PlayerWidth and ball.rect.x <= player2.rect.x + PlayerWidth and (ball.rect.y >= player2.rect.y - PlayerHeight and ball.rect.y <= player2.rect.y + PlayerHeight):
         ball.xFac *= -1
 
     if ball.rect.x >= WIDTH:
@@ -137,13 +151,10 @@ while running:
     if ball.rect.x <= 0:
         resetBallPlayer2()
 
-    print(player.score, ":", player2.score)
-
-    #print("ball X Y", ball.rect.x, ball.rect.y, "Pos X Y:", player2.rect.x, player2.rect.y, "top:", player2.rect.y, "mid:", player2.rect.y + (PlayerHeight / 3), "bottom", player2.rect.y + (2 * (PlayerHeight / 3)))
-
-
     # Рендеринг
     screen.fill(BLACK)
+    screen.blit(fnt.render(str(player.score), True, WHITE), place)
+    screen.blit(fnt.render(str(player2.score), True, WHITE), place2)
     pygame.draw.line(screen, WHITE, (WIDTH / 2, 0), (WIDTH / 2, HEIGHT), 7)
     all_sprites.draw(screen)
     # После отрисовки всего, переворачиваем экран
